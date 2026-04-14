@@ -2,13 +2,17 @@ package ms.patientservice.service;
 
 import lombok.RequiredArgsConstructor;
 import ms.patientservice.entity.Patient;
+import ms.patientservice.exception.EmailAlreadyExistException;
+import ms.patientservice.exception.PatientNotFoundException;
 import ms.patientservice.mapper.PatientMapper;
-import ms.patientservice.model.PatientDto;
-import ms.patientservice.model.PatientRequestDto;
+import ms.patientservice.dto.PatientDto;
+import ms.patientservice.dto.PatientRequestDto;
 import ms.patientservice.repository.PatientRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -28,8 +32,36 @@ public class PatientService {
 
     public PatientDto createPatient(PatientRequestDto patientRequestDto){
 
+        if(patientRepository.existsByEmail(patientRequestDto.getEmail())){
+            throw new EmailAlreadyExistException("Patient with same email already exists"+ patientRequestDto.getEmail());
+        }
         Patient newPatient = patientRepository.save(patientMapper.toEntity(patientRequestDto));
 
         return patientMapper.toDto(newPatient);
     }
+
+    public PatientDto updatePatient(UUID id, PatientRequestDto patientRequestDTO) {
+
+        Patient patient = patientRepository.findById(id).orElseThrow(
+                () -> new PatientNotFoundException("Patient not found with ID: " + id));
+
+        if (patientRepository.existsByEmailAndIdNot(patientRequestDTO.getEmail(), id)) {
+            throw new EmailAlreadyExistException("A patient with this email " + "already exists"
+                            + patientRequestDTO.getEmail());
+        }
+
+        patient.setName(patientRequestDTO.getName());
+        patient.setAddress(patientRequestDTO.getAddress());
+        patient.setEmail(patientRequestDTO.getEmail());
+        patient.setDateOfBirth(LocalDate.parse(patientRequestDTO.getDateOfBirth()));
+
+        Patient updatedPatient = patientRepository.save(patient);
+        return patientMapper.toDto(updatedPatient);
+    }
+
+    public void deletePatient(UUID id) {
+        patientRepository.deleteById(id);
+    }
+
+
 }

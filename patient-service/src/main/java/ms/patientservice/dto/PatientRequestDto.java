@@ -1,10 +1,11 @@
-package ms.patientservice.model;
+package ms.patientservice.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import ms.patientservice.dto.validators.CreatePatientValidationGroup;
 
 @Getter
 @Setter
@@ -24,6 +25,6 @@ public class PatientRequestDto {
     @NotBlank(message = "Date of birth is required")
     private String dateOfBirth;
 
-//    @NotBlank(groups = CreatePatientValidationGroup.class, message = "Registered date is required")
+    @NotBlank(groups = CreatePatientValidationGroup.class, message = "Registered date is required")
     private String registeredDate;
 }
