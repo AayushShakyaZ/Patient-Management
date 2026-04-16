@@ -20,8 +20,7 @@ public class PatientController {
 
     private final PatientService patientService;
 
-    @GetMapping
-    @RequestMapping("/list")
+    @GetMapping("/list")
     public ResponseEntity<List<PatientDto>> allPatients(){
 
         List<PatientDto> patientDtos = patientService.getPatients();
@@ -29,8 +28,7 @@ public class PatientController {
         return ResponseEntity.ok().body(patientDtos);
     }
 
-    @PostMapping
-    @RequestMapping("/create")
+    @PostMapping("/create")
     public ResponseEntity<PatientDto> createPatient(@Validated({Default.class, CreatePatientValidationGroup.class})
                                                         @RequestBody PatientRequestDto patientRequestDto){
 
