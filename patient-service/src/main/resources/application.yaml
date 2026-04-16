@@ -2,15 +2,13 @@ spring:
   application:
     name: patient-service
 
-  datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-    username: admin
-    password: password
-
-
-
 # IN MEMORY DB CONFIG
+
+#  datasource:
+#    url: jdbc:h2:mem:testdb
+#    driver-class-name: org.h2.Driver
+#    username: admin
+#    password: password
 #  h2:
 #    console:
 #      enabled: true
