@@ -23,4 +23,6 @@ spring:
 server:
   port: 4000
 
-#logging:
+logging:
+  level:
+    root: info
