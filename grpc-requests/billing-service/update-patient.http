@@ -1,10 +1,10 @@
 
 
-POST http://localhost:4000/api/patients/create
+POST http://localhost:4000/api/patients/update/d88da104-8d39-43f4-a529-6382f66752b8
 Content-Type: application/json
 
 {
-  "name": "Aayush Shakya",
+  "name": "Aayush Kumar Shakya",
   "email": "aayush.shakya@gmail.com",
   "address": "Baneshwor",
   "dateOfBirth": "2001-02-24",

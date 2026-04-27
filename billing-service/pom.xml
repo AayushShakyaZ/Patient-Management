@@ -5,10 +5,9 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.0</version>
+        <version>3.4.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>ms</groupId>
     <artifactId>billing-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>billing-service</name>
@@ -35,11 +34,6 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -69,14 +63,19 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>4.29.1</version>
+        </dependency>
+        <dependency>
             <groupId>net.devh</groupId>
             <artifactId>grpc-spring-boot-starter</artifactId>
             <version>3.1.0.RELEASE</version>
         </dependency>
         <dependency>
-            <groupId>com.google.protobuf</groupId>
-            <artifactId>protobuf-java</artifactId>
-            <version>4.29.1</version>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>
@@ -88,10 +87,9 @@
             <extension>
                 <groupId>kr.motd.maven</groupId>
                 <artifactId>os-maven-plugin</artifactId>
-                <version>1.7.1</version>
+                <version>1.7.0</version>
             </extension>
         </extensions>
-
         <plugins>
             <!-- Spring boot / maven  -->
             <plugin>
@@ -106,19 +104,23 @@
                 <version>0.6.1</version>
 
                 <configuration>
-                    <protoSourceRoot>${project.basedir}/src/main/proto</protoSourceRoot>
-
                     <protocArtifact>
-                        com.google.protobuf:protoc:3.25.5:exe:${os.classifier}
+                        com.google.protobuf:protoc:3.25.5:exe:${os.detected.classifier}
                     </protocArtifact>
 
+                    <pluginId>grpc-java</pluginId>
+
                     <pluginArtifact>
-                        io.grpc:protoc-gen-grpc-java:1.68.1:exe:${os.classifier}
+                        io.grpc:protoc-gen-grpc-java:1.68.1:exe:${os.detected.classifier}
                     </pluginArtifact>
+
+                    <clearOutputDirectory>true</clearOutputDirectory>
                 </configuration>
 
                 <executions>
                     <execution>
+                        <id>generate-proto</id>
+                        <phase>generate-sources</phase> <!-- 🔥 CRITICAL -->
                         <goals>
                             <goal>compile</goal>
                             <goal>compile-custom</goal>
@@ -126,66 +128,7 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default-compile</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                        <configuration>
-                            <annotationProcessorPaths>
-                                <path>
-                                    <groupId>org.projectlombok</groupId>
-                                    <artifactId>lombok</artifactId>
-                                </path>
-                            </annotationProcessorPaths>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>default-testCompile</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>testCompile</goal>
-                        </goals>
-                        <configuration>
-                            <annotationProcessorPaths>
-                                <path>
-                                    <groupId>org.projectlombok</groupId>
-                                    <artifactId>lombok</artifactId>
-                                </path>
-                            </annotationProcessorPaths>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>mac</id>
-            <activation>
-                <os><family>mac</family></os>
-            </activation>
-            <properties>
-                <os.classifier>osx-x86_64</os.classifier>
-            </properties>
-        </profile>
-
-        <profile>
-            <id>linux</id>
-            <activation>
-                <os><family>unix</family></os>
-            </activation>
-            <properties>
-                <os.classifier>linux-x86_64</os.classifier>
-            </properties>
-        </profile>
-    </profiles>
 
 </project>

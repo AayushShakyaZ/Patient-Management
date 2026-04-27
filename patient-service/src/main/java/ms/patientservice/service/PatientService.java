@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import ms.patientservice.entity.Patient;
 import ms.patientservice.exception.EmailAlreadyExistException;
 import ms.patientservice.exception.PatientNotFoundException;
+import ms.patientservice.grpc.BillingServiceGrpcClient;
 import ms.patientservice.mapper.PatientMapper;
 import ms.patientservice.dto.PatientDto;
 import ms.patientservice.dto.PatientRequestDto;
@@ -20,6 +21,7 @@ public class PatientService {
 
     private final PatientRepository patientRepository;
     private final PatientMapper patientMapper;
+    private final BillingServiceGrpcClient billingServiceGrpcClient;
 
     public List<PatientDto> getPatients(){
 
@@ -36,6 +38,11 @@ public class PatientService {
             throw new EmailAlreadyExistException("Patient with same email already exists"+ patientRequestDto.getEmail());
         }
         Patient newPatient = patientRepository.save(patientMapper.toEntity(patientRequestDto));
+
+        billingServiceGrpcClient.createBillingAccount(
+                newPatient.getId().toString(),
+                newPatient.getName(),
+                newPatient.getEmail());
 
         return patientMapper.toDto(newPatient);
     }
